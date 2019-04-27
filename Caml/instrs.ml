@@ -27,7 +27,7 @@ and code = instr list
   
 type stackelem = Val of value | Cod of code
 
-leet rec exec = function
+let rec exec = function
    (PairV(x,y), PrimInstr(UnOp(Fst))::c, st) -> exec(x,c,st)
 
    | (PairV(x,y), PrimInstr(UnOp(Snd))::c, st) -> exec(y,c,st)
@@ -66,9 +66,18 @@ leet rec exec = function
    | (x, (Cur c1)::c,d)  -> exec(ClosureV(c1 ,x), c , d)
 
    | (x, Return::c ,(Cod cc)::d) -> exec(x, cc , d)
+   
+   | (t, Call(f)::c,st,fds) -> (t,(List.assoc f fds)@c,st,fds)
+   
+   | (t, AddDefs(defs)::c,st,fds) -> (t,c,st,defs@fds)
+   
+   | (t, RmDefs(n)::c,st,fds) -> (t,c,st,chop n fds)
 
    | cfg -> cfg;;
 
+let rec chop n fds = match n,fds with
+	(1,a::fds) -> fds
+	|(n,fds) -> chop n-1 fds;;
 
 let rec access v env = match env with
 	[] -> failwith "liste vide"
@@ -81,7 +90,11 @@ let rec compile = function
 	|(env,Int(i)) -> [Quote(IntV(i))]
 	|(env,Var(v)) -> access v env
 	|(env, Fn(v,e)) -> [Cur(compile(v::env, e)@[Return])]
-	|(env, App(f,a)) -> [Push]@(compile(env,f))@[Swap]@(compile(env,a))@[Cons;App];;
+	|(env, App(PrimOp(p),e)) -> compile(env,e)@[PrimInstr(p)]
+	|(env, App(f,a)) -> [Push]@(compile(env,f))@[Swap]@(compile(env,a))@[Cons;App]
+	|(env, Pair(e1,e2)) -> [Push]@(compile(env,e1))@[Swap]@(compile(env,e2))@[Cons];;
+	|(env, Cond(i,t,e)) -> [Push]@compile(env,i)@[Branch(compile(env,t)@[Return],compile(env,e)@[Return])];;
+	
 
 let compile_prog = function
 	Prog(t, exp) -> compile([], exp);;

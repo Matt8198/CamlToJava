@@ -1,0 +1,1222 @@
+   0  $accept : %entry% $end
+
+   1  start : prog
+
+   2  prog : typedef mlexp end_marker_opt EOF
+
+   3  end_marker_opt :
+   4                 | SEMICOLON SEMICOLON
+
+   5  typedef :
+   6          | TYPE IDENTIFIER
+
+   7  mult_exp : primary_exp_list_as_mlexp
+   8           | mult_exp MUL primary_exp_list_as_mlexp
+   9           | mult_exp DIV primary_exp_list_as_mlexp
+  10           | mult_exp MOD primary_exp_list_as_mlexp
+
+  11  add_exp : mult_exp
+  12          | add_exp ADD mult_exp
+  13          | add_exp SUB mult_exp
+
+  14  comp_exp : add_exp
+  15           | comp_exp EQ comp_exp
+  16           | comp_exp GE comp_exp
+  17           | comp_exp GT comp_exp
+  18           | comp_exp LE comp_exp
+  19           | comp_exp LT comp_exp
+  20           | comp_exp NE comp_exp
+
+  21  bool_exp : comp_exp
+  22           | bool_exp BLAND bool_exp
+  23           | bool_exp BLOR bool_exp
+
+  24  unary_op : FST
+  25           | SND
+
+  26  primary_exp : IDENTIFIER
+  27              | BCONSTANT
+  28              | INTCONSTANT
+  29              | unary_op
+  30              | LPAREN mlexp RPAREN
+
+  31  primary_exp_list : primary_exp
+  32                   | primary_exp primary_exp_list
+
+  33  primary_exp_list_as_mlexp : primary_exp_list
+
+  34  mlexp : bool_exp
+  35        | IF mlexp THEN mlexp ELSE mlexp
+  36        | FUN IDENTIFIER ARROW mlexp
+  37        | LET REC let_binding_list IN mlexp
+
+  38  let_binding : IDENTIFIER EQ mlexp
+
+  39  let_binding_list : let_binding
+  40                   | let_binding AND let_binding_list
+
+  41  %entry% : '\001' start
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . start  (41)
+	typedef : .  (5)
+
+	TYPE  shift 3
+	IDENTIFIER  reduce 5
+	BCONSTANT  reduce 5
+	INTCONSTANT  reduce 5
+	FST  reduce 5
+	SND  reduce 5
+	LPAREN  reduce 5
+	IF  reduce 5
+	FUN  reduce 5
+	LET  reduce 5
+
+	start  goto 4
+	prog  goto 5
+	typedef  goto 6
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	typedef : TYPE . IDENTIFIER  (6)
+
+	IDENTIFIER  shift 7
+	.  error
+
+
+state 4
+	%entry% : '\001' start .  (41)
+
+	.  reduce 41
+
+
+state 5
+	start : prog .  (1)
+
+	.  reduce 1
+
+
+state 6
+	prog : typedef . mlexp end_marker_opt EOF  (2)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 17
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 7
+	typedef : TYPE IDENTIFIER .  (6)
+
+	.  reduce 6
+
+
+state 8
+	primary_exp : IDENTIFIER .  (26)
+
+	.  reduce 26
+
+
+state 9
+	primary_exp : BCONSTANT .  (27)
+
+	.  reduce 27
+
+
+state 10
+	primary_exp : INTCONSTANT .  (28)
+
+	.  reduce 28
+
+
+state 11
+	unary_op : FST .  (24)
+
+	.  reduce 24
+
+
+state 12
+	unary_op : SND .  (25)
+
+	.  reduce 25
+
+
+state 13
+	primary_exp : LPAREN . mlexp RPAREN  (30)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 26
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 14
+	mlexp : IF . mlexp THEN mlexp ELSE mlexp  (35)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 27
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 15
+	mlexp : FUN . IDENTIFIER ARROW mlexp  (36)
+
+	IDENTIFIER  shift 28
+	.  error
+
+
+state 16
+	mlexp : LET . REC let_binding_list IN mlexp  (37)
+
+	REC  shift 29
+	.  error
+
+
+state 17
+	prog : typedef mlexp . end_marker_opt EOF  (2)
+	end_marker_opt : .  (3)
+
+	SEMICOLON  shift 30
+	EOF  reduce 3
+
+	end_marker_opt  goto 31
+
+
+state 18
+	mult_exp : mult_exp . MUL primary_exp_list_as_mlexp  (8)
+	mult_exp : mult_exp . DIV primary_exp_list_as_mlexp  (9)
+	mult_exp : mult_exp . MOD primary_exp_list_as_mlexp  (10)
+	add_exp : mult_exp .  (11)
+
+	MUL  shift 32
+	DIV  shift 33
+	MOD  shift 34
+	ADD  reduce 11
+	SUB  reduce 11
+	EQ  reduce 11
+	GE  reduce 11
+	GT  reduce 11
+	LE  reduce 11
+	LT  reduce 11
+	NE  reduce 11
+	BLAND  reduce 11
+	BLOR  reduce 11
+	RPAREN  reduce 11
+	SEMICOLON  reduce 11
+	THEN  reduce 11
+	ELSE  reduce 11
+	AND  reduce 11
+	IN  reduce 11
+	EOF  reduce 11
+
+
+state 19
+	mult_exp : primary_exp_list_as_mlexp .  (7)
+
+	.  reduce 7
+
+
+state 20
+	add_exp : add_exp . ADD mult_exp  (12)
+	add_exp : add_exp . SUB mult_exp  (13)
+	comp_exp : add_exp .  (14)
+
+	ADD  shift 35
+	SUB  shift 36
+	EQ  reduce 14
+	GE  reduce 14
+	GT  reduce 14
+	LE  reduce 14
+	LT  reduce 14
+	NE  reduce 14
+	BLAND  reduce 14
+	BLOR  reduce 14
+	RPAREN  reduce 14
+	SEMICOLON  reduce 14
+	THEN  reduce 14
+	ELSE  reduce 14
+	AND  reduce 14
+	IN  reduce 14
+	EOF  reduce 14
+
+
+state 21
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+	bool_exp : comp_exp .  (21)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 21
+	BLOR  reduce 21
+	RPAREN  reduce 21
+	SEMICOLON  reduce 21
+	THEN  reduce 21
+	ELSE  reduce 21
+	AND  reduce 21
+	IN  reduce 21
+	EOF  reduce 21
+
+
+state 22
+	bool_exp : bool_exp . BLAND bool_exp  (22)
+	bool_exp : bool_exp . BLOR bool_exp  (23)
+	mlexp : bool_exp .  (34)
+
+	BLAND  shift 43
+	BLOR  shift 44
+	RPAREN  reduce 34
+	SEMICOLON  reduce 34
+	THEN  reduce 34
+	ELSE  reduce 34
+	AND  reduce 34
+	IN  reduce 34
+	EOF  reduce 34
+
+
+state 23
+	primary_exp : unary_op .  (29)
+
+	.  reduce 29
+
+
+state 24
+	primary_exp_list : primary_exp .  (31)
+	primary_exp_list : primary_exp . primary_exp_list  (32)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	ADD  reduce 31
+	SUB  reduce 31
+	MUL  reduce 31
+	DIV  reduce 31
+	MOD  reduce 31
+	EQ  reduce 31
+	GE  reduce 31
+	GT  reduce 31
+	LE  reduce 31
+	LT  reduce 31
+	NE  reduce 31
+	BLAND  reduce 31
+	BLOR  reduce 31
+	RPAREN  reduce 31
+	SEMICOLON  reduce 31
+	THEN  reduce 31
+	ELSE  reduce 31
+	AND  reduce 31
+	IN  reduce 31
+	EOF  reduce 31
+
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 45
+
+
+state 25
+	primary_exp_list_as_mlexp : primary_exp_list .  (33)
+
+	.  reduce 33
+
+
+state 26
+	primary_exp : LPAREN mlexp . RPAREN  (30)
+
+	RPAREN  shift 46
+	.  error
+
+
+state 27
+	mlexp : IF mlexp . THEN mlexp ELSE mlexp  (35)
+
+	THEN  shift 47
+	.  error
+
+
+state 28
+	mlexp : FUN IDENTIFIER . ARROW mlexp  (36)
+
+	ARROW  shift 48
+	.  error
+
+
+state 29
+	mlexp : LET REC . let_binding_list IN mlexp  (37)
+
+	IDENTIFIER  shift 49
+	.  error
+
+	let_binding_list  goto 50
+	let_binding  goto 51
+
+
+state 30
+	end_marker_opt : SEMICOLON . SEMICOLON  (4)
+
+	SEMICOLON  shift 52
+	.  error
+
+
+state 31
+	prog : typedef mlexp end_marker_opt . EOF  (2)
+
+	EOF  shift 53
+	.  error
+
+
+state 32
+	mult_exp : mult_exp MUL . primary_exp_list_as_mlexp  (8)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	primary_exp_list_as_mlexp  goto 54
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 33
+	mult_exp : mult_exp DIV . primary_exp_list_as_mlexp  (9)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	primary_exp_list_as_mlexp  goto 55
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 34
+	mult_exp : mult_exp MOD . primary_exp_list_as_mlexp  (10)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	primary_exp_list_as_mlexp  goto 56
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 35
+	add_exp : add_exp ADD . mult_exp  (12)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 57
+	primary_exp_list_as_mlexp  goto 19
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 36
+	add_exp : add_exp SUB . mult_exp  (13)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 58
+	primary_exp_list_as_mlexp  goto 19
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 37
+	comp_exp : comp_exp EQ . comp_exp  (15)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 59
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 38
+	comp_exp : comp_exp GE . comp_exp  (16)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 60
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 39
+	comp_exp : comp_exp GT . comp_exp  (17)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 61
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 40
+	comp_exp : comp_exp LE . comp_exp  (18)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 62
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 41
+	comp_exp : comp_exp LT . comp_exp  (19)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 63
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 42
+	comp_exp : comp_exp NE . comp_exp  (20)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 64
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 43
+	bool_exp : bool_exp BLAND . bool_exp  (22)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 65
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 44
+	bool_exp : bool_exp BLOR . bool_exp  (23)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	.  error
+
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 66
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 45
+	primary_exp_list : primary_exp primary_exp_list .  (32)
+
+	.  reduce 32
+
+
+state 46
+	primary_exp : LPAREN mlexp RPAREN .  (30)
+
+	.  reduce 30
+
+
+state 47
+	mlexp : IF mlexp THEN . mlexp ELSE mlexp  (35)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 67
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 48
+	mlexp : FUN IDENTIFIER ARROW . mlexp  (36)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 68
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 49
+	let_binding : IDENTIFIER . EQ mlexp  (38)
+
+	EQ  shift 69
+	.  error
+
+
+state 50
+	mlexp : LET REC let_binding_list . IN mlexp  (37)
+
+	IN  shift 70
+	.  error
+
+
+state 51
+	let_binding_list : let_binding .  (39)
+	let_binding_list : let_binding . AND let_binding_list  (40)
+
+	AND  shift 71
+	IN  reduce 39
+
+
+state 52
+	end_marker_opt : SEMICOLON SEMICOLON .  (4)
+
+	.  reduce 4
+
+
+state 53
+	prog : typedef mlexp end_marker_opt EOF .  (2)
+
+	.  reduce 2
+
+
+state 54
+	mult_exp : mult_exp MUL primary_exp_list_as_mlexp .  (8)
+
+	.  reduce 8
+
+
+state 55
+	mult_exp : mult_exp DIV primary_exp_list_as_mlexp .  (9)
+
+	.  reduce 9
+
+
+state 56
+	mult_exp : mult_exp MOD primary_exp_list_as_mlexp .  (10)
+
+	.  reduce 10
+
+
+state 57
+	mult_exp : mult_exp . MUL primary_exp_list_as_mlexp  (8)
+	mult_exp : mult_exp . DIV primary_exp_list_as_mlexp  (9)
+	mult_exp : mult_exp . MOD primary_exp_list_as_mlexp  (10)
+	add_exp : add_exp ADD mult_exp .  (12)
+
+	MUL  shift 32
+	DIV  shift 33
+	MOD  shift 34
+	ADD  reduce 12
+	SUB  reduce 12
+	EQ  reduce 12
+	GE  reduce 12
+	GT  reduce 12
+	LE  reduce 12
+	LT  reduce 12
+	NE  reduce 12
+	BLAND  reduce 12
+	BLOR  reduce 12
+	RPAREN  reduce 12
+	SEMICOLON  reduce 12
+	THEN  reduce 12
+	ELSE  reduce 12
+	AND  reduce 12
+	IN  reduce 12
+	EOF  reduce 12
+
+
+state 58
+	mult_exp : mult_exp . MUL primary_exp_list_as_mlexp  (8)
+	mult_exp : mult_exp . DIV primary_exp_list_as_mlexp  (9)
+	mult_exp : mult_exp . MOD primary_exp_list_as_mlexp  (10)
+	add_exp : add_exp SUB mult_exp .  (13)
+
+	MUL  shift 32
+	DIV  shift 33
+	MOD  shift 34
+	ADD  reduce 13
+	SUB  reduce 13
+	EQ  reduce 13
+	GE  reduce 13
+	GT  reduce 13
+	LE  reduce 13
+	LT  reduce 13
+	NE  reduce 13
+	BLAND  reduce 13
+	BLOR  reduce 13
+	RPAREN  reduce 13
+	SEMICOLON  reduce 13
+	THEN  reduce 13
+	ELSE  reduce 13
+	AND  reduce 13
+	IN  reduce 13
+	EOF  reduce 13
+
+
+59: shift/reduce conflict (shift 37, reduce 15) on EQ
+59: shift/reduce conflict (shift 38, reduce 15) on GE
+59: shift/reduce conflict (shift 39, reduce 15) on GT
+59: shift/reduce conflict (shift 40, reduce 15) on LE
+59: shift/reduce conflict (shift 41, reduce 15) on LT
+59: shift/reduce conflict (shift 42, reduce 15) on NE
+state 59
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp EQ comp_exp .  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 15
+	BLOR  reduce 15
+	RPAREN  reduce 15
+	SEMICOLON  reduce 15
+	THEN  reduce 15
+	ELSE  reduce 15
+	AND  reduce 15
+	IN  reduce 15
+	EOF  reduce 15
+
+
+60: shift/reduce conflict (shift 37, reduce 16) on EQ
+60: shift/reduce conflict (shift 38, reduce 16) on GE
+60: shift/reduce conflict (shift 39, reduce 16) on GT
+60: shift/reduce conflict (shift 40, reduce 16) on LE
+60: shift/reduce conflict (shift 41, reduce 16) on LT
+60: shift/reduce conflict (shift 42, reduce 16) on NE
+state 60
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp GE comp_exp .  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 16
+	BLOR  reduce 16
+	RPAREN  reduce 16
+	SEMICOLON  reduce 16
+	THEN  reduce 16
+	ELSE  reduce 16
+	AND  reduce 16
+	IN  reduce 16
+	EOF  reduce 16
+
+
+61: shift/reduce conflict (shift 37, reduce 17) on EQ
+61: shift/reduce conflict (shift 38, reduce 17) on GE
+61: shift/reduce conflict (shift 39, reduce 17) on GT
+61: shift/reduce conflict (shift 40, reduce 17) on LE
+61: shift/reduce conflict (shift 41, reduce 17) on LT
+61: shift/reduce conflict (shift 42, reduce 17) on NE
+state 61
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp GT comp_exp .  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 17
+	BLOR  reduce 17
+	RPAREN  reduce 17
+	SEMICOLON  reduce 17
+	THEN  reduce 17
+	ELSE  reduce 17
+	AND  reduce 17
+	IN  reduce 17
+	EOF  reduce 17
+
+
+62: shift/reduce conflict (shift 37, reduce 18) on EQ
+62: shift/reduce conflict (shift 38, reduce 18) on GE
+62: shift/reduce conflict (shift 39, reduce 18) on GT
+62: shift/reduce conflict (shift 40, reduce 18) on LE
+62: shift/reduce conflict (shift 41, reduce 18) on LT
+62: shift/reduce conflict (shift 42, reduce 18) on NE
+state 62
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp LE comp_exp .  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 18
+	BLOR  reduce 18
+	RPAREN  reduce 18
+	SEMICOLON  reduce 18
+	THEN  reduce 18
+	ELSE  reduce 18
+	AND  reduce 18
+	IN  reduce 18
+	EOF  reduce 18
+
+
+63: shift/reduce conflict (shift 37, reduce 19) on EQ
+63: shift/reduce conflict (shift 38, reduce 19) on GE
+63: shift/reduce conflict (shift 39, reduce 19) on GT
+63: shift/reduce conflict (shift 40, reduce 19) on LE
+63: shift/reduce conflict (shift 41, reduce 19) on LT
+63: shift/reduce conflict (shift 42, reduce 19) on NE
+state 63
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp LT comp_exp .  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 19
+	BLOR  reduce 19
+	RPAREN  reduce 19
+	SEMICOLON  reduce 19
+	THEN  reduce 19
+	ELSE  reduce 19
+	AND  reduce 19
+	IN  reduce 19
+	EOF  reduce 19
+
+
+64: shift/reduce conflict (shift 37, reduce 20) on EQ
+64: shift/reduce conflict (shift 38, reduce 20) on GE
+64: shift/reduce conflict (shift 39, reduce 20) on GT
+64: shift/reduce conflict (shift 40, reduce 20) on LE
+64: shift/reduce conflict (shift 41, reduce 20) on LT
+64: shift/reduce conflict (shift 42, reduce 20) on NE
+state 64
+	comp_exp : comp_exp . EQ comp_exp  (15)
+	comp_exp : comp_exp . GE comp_exp  (16)
+	comp_exp : comp_exp . GT comp_exp  (17)
+	comp_exp : comp_exp . LE comp_exp  (18)
+	comp_exp : comp_exp . LT comp_exp  (19)
+	comp_exp : comp_exp . NE comp_exp  (20)
+	comp_exp : comp_exp NE comp_exp .  (20)
+
+	EQ  shift 37
+	GE  shift 38
+	GT  shift 39
+	LE  shift 40
+	LT  shift 41
+	NE  shift 42
+	BLAND  reduce 20
+	BLOR  reduce 20
+	RPAREN  reduce 20
+	SEMICOLON  reduce 20
+	THEN  reduce 20
+	ELSE  reduce 20
+	AND  reduce 20
+	IN  reduce 20
+	EOF  reduce 20
+
+
+65: shift/reduce conflict (shift 43, reduce 22) on BLAND
+65: shift/reduce conflict (shift 44, reduce 22) on BLOR
+state 65
+	bool_exp : bool_exp . BLAND bool_exp  (22)
+	bool_exp : bool_exp BLAND bool_exp .  (22)
+	bool_exp : bool_exp . BLOR bool_exp  (23)
+
+	BLAND  shift 43
+	BLOR  shift 44
+	RPAREN  reduce 22
+	SEMICOLON  reduce 22
+	THEN  reduce 22
+	ELSE  reduce 22
+	AND  reduce 22
+	IN  reduce 22
+	EOF  reduce 22
+
+
+66: shift/reduce conflict (shift 43, reduce 23) on BLAND
+66: shift/reduce conflict (shift 44, reduce 23) on BLOR
+state 66
+	bool_exp : bool_exp . BLAND bool_exp  (22)
+	bool_exp : bool_exp . BLOR bool_exp  (23)
+	bool_exp : bool_exp BLOR bool_exp .  (23)
+
+	BLAND  shift 43
+	BLOR  shift 44
+	RPAREN  reduce 23
+	SEMICOLON  reduce 23
+	THEN  reduce 23
+	ELSE  reduce 23
+	AND  reduce 23
+	IN  reduce 23
+	EOF  reduce 23
+
+
+state 67
+	mlexp : IF mlexp THEN mlexp . ELSE mlexp  (35)
+
+	ELSE  shift 72
+	.  error
+
+
+state 68
+	mlexp : FUN IDENTIFIER ARROW mlexp .  (36)
+
+	.  reduce 36
+
+
+state 69
+	let_binding : IDENTIFIER EQ . mlexp  (38)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 73
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 70
+	mlexp : LET REC let_binding_list IN . mlexp  (37)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 74
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 71
+	let_binding_list : let_binding AND . let_binding_list  (40)
+
+	IDENTIFIER  shift 49
+	.  error
+
+	let_binding_list  goto 75
+	let_binding  goto 51
+
+
+state 72
+	mlexp : IF mlexp THEN mlexp ELSE . mlexp  (35)
+
+	IDENTIFIER  shift 8
+	BCONSTANT  shift 9
+	INTCONSTANT  shift 10
+	FST  shift 11
+	SND  shift 12
+	LPAREN  shift 13
+	IF  shift 14
+	FUN  shift 15
+	LET  shift 16
+	.  error
+
+	mlexp  goto 76
+	mult_exp  goto 18
+	primary_exp_list_as_mlexp  goto 19
+	add_exp  goto 20
+	comp_exp  goto 21
+	bool_exp  goto 22
+	unary_op  goto 23
+	primary_exp  goto 24
+	primary_exp_list  goto 25
+
+
+state 73
+	let_binding : IDENTIFIER EQ mlexp .  (38)
+
+	.  reduce 38
+
+
+state 74
+	mlexp : LET REC let_binding_list IN mlexp .  (37)
+
+	.  reduce 37
+
+
+state 75
+	let_binding_list : let_binding AND let_binding_list .  (40)
+
+	.  reduce 40
+
+
+state 76
+	mlexp : IF mlexp THEN mlexp ELSE mlexp .  (35)
+
+	.  reduce 35
+
+
+State 59 contains 6 shift/reduce conflicts.
+State 60 contains 6 shift/reduce conflicts.
+State 61 contains 6 shift/reduce conflicts.
+State 62 contains 6 shift/reduce conflicts.
+State 63 contains 6 shift/reduce conflicts.
+State 64 contains 6 shift/reduce conflicts.
+State 65 contains 2 shift/reduce conflicts.
+State 66 contains 2 shift/reduce conflicts.
+
+
+43 terminals, 17 nonterminals
+42 grammar rules, 77 states
