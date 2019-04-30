@@ -22,4 +22,8 @@ public class PairV extends Value{
     public void setFstValue(Value nFst){fst = nFst;}
     public void setSndValue(Value nSnd){snd = nSnd;}
         
+	void print_value() {
+		System.out.print(fst);
+		System.out.print(snd);
+    }
 }

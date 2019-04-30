@@ -27,45 +27,35 @@ and code = instr list
   
 type stackelem = Val of value | Cod of code
 
+
+let rec chop n fds = match n,fds with
+	(1,a::fds) -> fds
+	|(n,fds) -> chop (n-1) (fds);;
+	
 let rec exec = function
-   (PairV(x,y), PrimInstr(UnOp(Fst))::c, st) -> exec(x,c,st)
-
-   | (PairV(x,y), PrimInstr(UnOp(Snd))::c, st) -> exec(y,c,st)
-
-   | (x, Cons::c,(Val y)::d) -> exec(PairV(y,x), c, d)
-
-   | (x, Push::c, d) -> exec(x, c, (Val x)::d)
-
-   | (x, Swap::c,(Val y)::d) -> exec(y, c, (Val x)::d)
-
-   | (t, (Quote v)::c, d) -> exec(v, c, d)
-
-   | (PairV(ClosureV(x,y),z), (App::c) ,d )-> exec( PairV(y,z),x , (Cod c)::d)
-
-   | ((BoolV b), Branch(c1, c2)::c, (Val x)::d) ->
-                exec(x, (if b then c1 else c2) ,(Cod c)::d)
-
-   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAadd)))::c,d) ->
-                exec(IntV (m + n), c , d)
-
-   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAsub)))::c,d) ->
-                exec(IntV (m - n), c , d)
-
-   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAmul)))::c,d) ->
-                exec(IntV (m * n), c , d)
-
-   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAdiv)))::c,d) ->
-                exec(IntV (m / n), c , d)
-
-   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAmod)))::c,d) ->
-                exec(IntV (m mod n), c , d)
-
-   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCeq)))::c,d) ->
-                exec(BoolV (m == n), c , d)
-
-   | (x, (Cur c1)::c,d)  -> exec(ClosureV(c1 ,x), c , d)
-
-   | (x, Return::c ,(Cod cc)::d) -> exec(x, cc , d)
+   (PairV(x,y), PrimInstr(UnOp(Fst))::c, st,fds) -> exec(x,c,st,fds)
+   | (PairV(x,y), PrimInstr(UnOp(Snd))::c, st,fds) -> exec(y,c,st,fds)
+   | (x, Cons::c,(Val y)::d,fds) -> exec(PairV(y,x), c, d,fds)
+   | (x, Push::c, d,fds) -> exec(x, c, (Val x)::d,fds)
+   | (x, Swap::c,(Val y)::d,fds) -> exec(y, c, (Val x)::d,fds)
+   | (t, (Quote v)::c, d,fds) -> exec(v, c, d,fds)
+   | (PairV(ClosureV(x,y),z), (App::c) ,d,fds)-> exec( PairV(y,z),x , (Cod c)::d,fds)
+   | ((BoolV b), Branch(c1, c2)::c, (Val x)::d,fds) ->
+                exec(x, (if b then c1 else c2) ,(Cod c)::d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAadd)))::c,d,fds) ->
+                exec(IntV (m + n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAsub)))::c,d,fds) ->
+                exec(IntV (m - n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAmul)))::c,d,fds) ->
+                exec(IntV (m * n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAdiv)))::c,d,fds) ->
+                exec(IntV (m / n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BArith(BAmod)))::c,d,fds) ->
+                exec(IntV (m mod n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCeq)))::c,d,fds) ->
+                exec(BoolV (m == n), c , d,fds)
+   | (x, (Cur c1)::c,d,fds)  -> exec(ClosureV(c1 ,x), c , d,fds)
+   | (x, Return::c ,(Cod cc)::d,fds) -> exec(x, cc , d,fds)
    
    | (t, Call(f)::c,st,fds) -> (t,(List.assoc f fds)@c,st,fds)
    
@@ -75,9 +65,6 @@ let rec exec = function
 
    | cfg -> cfg;;
 
-let rec chop n fds = match n,fds with
-	(1,a::fds) -> fds
-	|(n,fds) -> chop n-1 fds;;
 
 let rec access v env = match env with
 	[] -> failwith "liste vide"
@@ -92,8 +79,9 @@ let rec compile = function
 	|(env, Fn(v,e)) -> [Cur(compile(v::env, e)@[Return])]
 	|(env, App(PrimOp(p),e)) -> compile(env,e)@[PrimInstr(p)]
 	|(env, App(f,a)) -> [Push]@(compile(env,f))@[Swap]@(compile(env,a))@[Cons;App]
-	|(env, Pair(e1,e2)) -> [Push]@(compile(env,e1))@[Swap]@(compile(env,e2))@[Cons];;
-	|(env, Cond(i,t,e)) -> [Push]@compile(env,i)@[Branch(compile(env,t)@[Return],compile(env,e)@[Return])];;
+	|(env, Pair(e1,e2)) -> [Push]@(compile(env,e1))@[Swap]@(compile(env,e2))@[Cons]
+	|(env, Cond(i,t,e)) -> [Push]@compile(env,i)@[Branch(compile(env,t)@[Return],compile(env,e)@[Return])]
+	|(env,Fix(defs,e)) -> [AddDefs dc] @ ec @ [RmDefs (List.length dc)];;
 	
 
 let compile_prog = function

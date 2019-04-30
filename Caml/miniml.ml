@@ -26,7 +26,7 @@ type mlexp =
 | Cond of mlexp * mlexp * mlexp
 | Pair of mlexp * mlexp
 | App of mlexp * mlexp
-| Fn of var * mlexp
+| Fn of var * mlexpgene
 | Fix of (var * mlexp) list * mlexp
     
 type typedef = string
@@ -34,3 +34,4 @@ type prog = Prog of typedef option * mlexp
 
 let mlexp_of_prog (Prog(t, e)) = e
 
+type envelem= EVar of var | EDef of var list
