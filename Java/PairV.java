@@ -16,11 +16,19 @@ public class PairV extends Value{
         this.snd = snd;
     }
     
-    public Value getFstValue(){return fst;}
-    public Value getSndValue(){return snd;}
+    public Value getValue1(){
+		return fst;
+		}
+    public Value getValue2(){
+		return snd;
+		}
      
-    public void setFstValue(Value nFst){fst = nFst;}
-    public void setSndValue(Value nSnd){snd = nSnd;}
+    public void setValue1(Value new_Fst){
+		fst = new_Fst;
+		}
+    public void setValue2(Value new_Snd){
+		snd = new_Snd;
+		}
         
 	void print_value() {
 		System.out.print(fst);

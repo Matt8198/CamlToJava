@@ -3,6 +3,16 @@ import java.util.*;
 class Cons extends Instr {
 	
     void exec_instr(Config cf) {
-        cf.get_code();
+        //Récupérons la tête de la stack;
+		ValueSE y = (ValueSE) cf.get_stack().pop();
+		//On crée la Paire de la Value de la config avec celle de la pile
+		Value x = cf.get_value();
+		//Création de la paire
+		PairV p = new PairV(y.get_value(),x);
+		//On ajoute la Paire
+		cf.set_value(p);
+		//On lance la config
+		cf.get_code().pop();
+		
     }
 }

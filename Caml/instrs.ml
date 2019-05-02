@@ -32,6 +32,7 @@ let rec chop n fds = match n,fds with
 	(1,a::fds) -> fds
 	|(n,fds) -> chop (n-1) (fds);;
 	
+(* terme, code, pile*)
 let rec exec = function
    (PairV(x,y), PrimInstr(UnOp(Fst))::c, st,fds) -> exec(x,c,st,fds)
    | (PairV(x,y), PrimInstr(UnOp(Snd))::c, st,fds) -> exec(y,c,st,fds)
@@ -56,13 +57,11 @@ let rec exec = function
                 exec(BoolV (m == n), c , d,fds)
    | (x, (Cur c1)::c,d,fds)  -> exec(ClosureV(c1 ,x), c , d,fds)
    | (x, Return::c ,(Cod cc)::d,fds) -> exec(x, cc , d,fds)
-   
+   (*Appels récursifs*)
    | (t, Call(f)::c,st,fds) -> (t,(List.assoc f fds)@c,st,fds)
-   
    | (t, AddDefs(defs)::c,st,fds) -> (t,c,st,defs@fds)
-   
    | (t, RmDefs(n)::c,st,fds) -> (t,c,st,chop n fds)
-
+   (*Cas de base*)
    | cfg -> cfg;;
 
 
@@ -81,7 +80,7 @@ let rec compile = function
 	|(env, App(f,a)) -> [Push]@(compile(env,f))@[Swap]@(compile(env,a))@[Cons;App]
 	|(env, Pair(e1,e2)) -> [Push]@(compile(env,e1))@[Swap]@(compile(env,e2))@[Cons]
 	|(env, Cond(i,t,e)) -> [Push]@compile(env,i)@[Branch(compile(env,t)@[Return],compile(env,e)@[Return])]
-	|(env,Fix(defs,e)) -> [AddDefs dc] @ ec @ [RmDefs (List.length dc)];;
+	(* |(env,Fix(defs,e)) -> [AddDefs dc] @ ec @ [RmDefs (List.length dc)];; *)
 	
 
 let compile_prog = function

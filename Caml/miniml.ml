@@ -26,7 +26,7 @@ type mlexp =
 | Cond of mlexp * mlexp * mlexp
 | Pair of mlexp * mlexp
 | App of mlexp * mlexp
-| Fn of var * mlexpgene
+| Fn of var * mlexp
 | Fix of (var * mlexp) list * mlexp
     
 type typedef = string
