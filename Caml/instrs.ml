@@ -57,7 +57,7 @@ let rec exec = function
                 exec(BoolV (m == n), c , d,fds)
    | (x, (Cur c1)::c,d,fds)  -> exec(ClosureV(c1 ,x), c , d,fds)
    | (x, Return::c ,(Cod cc)::d,fds) -> exec(x, cc , d,fds)
-   (*Appels récursifs*)
+   (*Appels récursifs*) (*List.assoc récupère la valeur de la clé donnée en premier parametre*)
    | (t, Call(f)::c,st,fds) -> (t,(List.assoc f fds)@c,st,fds)
    | (t, AddDefs(defs)::c,st,fds) -> (t,c,st,defs@fds)
    | (t, RmDefs(n)::c,st,fds) -> (t,c,st,chop n fds)
@@ -85,3 +85,27 @@ let rec compile = function
 
 let compile_prog = function
 	Prog(t, exp) -> compile([], exp);;
+				
+let rec print_instr = function
+	(Push::config) -> "LLE.add_elem(new Push())," ^ print_instr(config)
+	|((Cur c)::config) ->"LLE.add_elem(new Cur("^print_instr(c)^"),"^print_instr(config)
+	|(Return::config) -> "LLE.add_elem(new Return()),"^print_instr(config)
+	|(Cons::config) -> "LLE.add_elem(new Cons())," ^ print_instr(config)
+	|(Swap::config) -> "LLE.add_elem(new Swap())," ^ print_instr(config)
+	|((Quote v)::config) -> "LLE.add_elem(new Quote("^ print_value(v) ^"),"^print_instr(config)
+	|(App::config) -> "LLE.add_elem(new App()),"^print_instr(config)
+	|(PrimInstr(UnOp(Fst))::config) -> "LLE.add_elem(new Fst()),"^print_instr(config)
+	|(PrimInstr(UnOp(Snd))::config) -> "LLE.add_elem(new Snd()),"^print_instr(config)
+	|[] -> "LLE.empty();"
+and print_value = function 
+	  NullV -> "new NullV();"
+	| IntV(v) -> "new IntV("^(string_of_int v)^"),"
+	| BoolV(b) -> "new BoolV("^(string_of_bool b)^"),"
+	| PairV(x,y) -> "new PairV("^print_value(x)^","^print_value(y)^")"
+	| ClosureV(c,v) -> "new ClosureV("^print_instr(c)^","^print_value(v)^")";;	
+
+let print_gen_class_to_java = function 
+	cfg -> "import java.util.*;" ^
+			"public class Gen {" ^
+			"public static LinkedList<Instr> code =" ^
+				print_instr(cfg) ^"}";;

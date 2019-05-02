@@ -9,6 +9,16 @@ class Cur extends Instr {
 	}
 	
     void exec_instr(Config cf) {
-        cf.get_code();
+        //On récupère la valeur de la config
+		ValueSE x = new ValueSE(cf.get_value());
+		
+		//On crée une closure
+		ClosureV clo = new ClosureV(code,x.get_value());
+		
+		//On met la closure dans la config
+		cf.set_value(clo);
+		
+		//On lance le code
+		cf.get_code().pop();
     }
 }

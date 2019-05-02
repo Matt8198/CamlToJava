@@ -11,7 +11,7 @@
 public class Fst extends Instr{
     
     void exec_inst(Config cf){
-        cf.set_value(((PairV)(cf.get_value())));
+        cf.set_value(((PairV)(cf.get_value())).getValue1());
         cf.get_code().pop();
     }
     
