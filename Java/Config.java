@@ -45,13 +45,18 @@ class Config extends Object {
 
     // one-step execution 
     boolean exec_step() {
+		System.out.println("");
         // to be implemented
         if (c.isEmpty()){
             return false;
         }
         else{
             c.get(0).exec_instr(this);
-            return true;
+			System.out.println(this.v);
+			System.out.println(this.c);
+			System.out.println(c.get(0));
+            System.out.println("");
+			return true;
         }
         
     }

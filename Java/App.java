@@ -1,15 +1,15 @@
 import java.util.*;
 
-class App extends Instr {
+public class App extends Instr {
 	
     void exec_instr(Config cf) {
 		cf.get_code().pop();
 		
 		//On récupère la valeur de la config qui est une paire entre une closure et une value
 		PairV p = (PairV) cf.get_value();
-		
+		System.out.println(p.getValue1());
 		//On récupère la closure
-		ClosureV clo = ((ClosureV) p.getValue1());
+		ClosureV clo = (ClosureV) (p.getValue1());
 		
 		//On récupère la valeur de la closure
 		ValueSE y = new ValueSE (clo.get_val());

@@ -1,6 +1,6 @@
 import java.util.*;
 
-class ValueSE extends StackElem {
+public class ValueSE extends StackElem {
 	Value val;
 	
 	public ValueSE (Value v){

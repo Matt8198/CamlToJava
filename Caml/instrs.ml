@@ -55,6 +55,16 @@ let rec exec = function
                 exec(IntV (m mod n), c , d,fds)
    | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCeq)))::c,d,fds) ->
                 exec(BoolV (m == n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCge)))::c,d,fds) ->
+                exec(BoolV (m >= n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCgt)))::c,d,fds) ->
+                exec(BoolV (m > n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCle)))::c,d,fds) ->
+                exec(BoolV (m <= n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BClt)))::c,d,fds) ->
+                exec(BoolV (m < n), c , d,fds)
+   | (PairV((IntV m), (IntV n)), PrimInstr(BinOp(BCompar(BCne)))::c,d,fds) ->
+                exec(BoolV (m <> n), c , d,fds)
    | (x, (Cur c1)::c,d,fds)  -> exec(ClosureV(c1 ,x), c , d,fds)
    | (x, Return::c ,(Cod cc)::d,fds) -> exec(x, cc , d,fds)
    (*Appels récursifs*) (*List.assoc récupère la valeur de la clé donnée en premier parametre*)
@@ -87,25 +97,36 @@ let compile_prog = function
 	Prog(t, exp) -> compile([], exp);;
 				
 let rec print_instr = function
-	(Push::config) -> "LLE.add_elem(new Push())," ^ print_instr(config)
-	|((Cur c)::config) ->"LLE.add_elem(new Cur("^print_instr(c)^"),"^print_instr(config)
-	|(Return::config) -> "LLE.add_elem(new Return()),"^print_instr(config)
-	|(Cons::config) -> "LLE.add_elem(new Cons())," ^ print_instr(config)
-	|(Swap::config) -> "LLE.add_elem(new Swap())," ^ print_instr(config)
-	|((Quote v)::config) -> "LLE.add_elem(new Quote("^ print_value(v) ^"),"^print_instr(config)
-	|(App::config) -> "LLE.add_elem(new App()),"^print_instr(config)
-	|(PrimInstr(UnOp(Fst))::config) -> "LLE.add_elem(new Fst()),"^print_instr(config)
-	|(PrimInstr(UnOp(Snd))::config) -> "LLE.add_elem(new Snd()),"^print_instr(config)
-	|[] -> "LLE.empty();"
+	(Push::config) -> "\nLLE.add_elem(new Push()," ^ print_instr(config)^")"
+	|((Cur c)::config) ->"\nLLE.add_elem(new Cur("^print_instr(c)^"),"^print_instr(config)^")"
+	|(Return::config) -> "\nLLE.add_elem(new Return(),"^print_instr(config)^")"
+	|(Cons::config) -> "\nLLE.add_elem(new Cons()," ^ print_instr(config)^")"
+	|(Swap::config) -> "\nLLE.add_elem(new Swap()," ^ print_instr(config)^")"
+	|((Quote v)::config) -> "\nLLE.add_elem(new Quote("^ print_value(v) ^"),"^print_instr(config)^")"
+	|(App::config) -> "\nLLE.add_elem(new App(),"^print_instr(config)^")"
+	|(PrimInstr(UnOp(Fst))::config) -> "\nLLE.add_elem(new Fst(),"^print_instr(config)^")"
+	|(PrimInstr(UnOp(Snd))::config) -> "\nLLE.add_elem(new Snd(),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BArith(BAadd)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Add),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BArith(BAsub)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Sub),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BArith(BAmul)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Mul),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BArith(BAmod)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Mod),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BArith(BAdiv)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Div),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BCompar(BCeq)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Eq),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BCompar(BCge)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Ge),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BCompar(BCgt)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Gt),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BCompar(BCle)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Le),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BCompar(BClt)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Lt),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BCompar(BCne)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Ne),"^print_instr(config)^")"
+	|[] -> "LLE.empty()"
 and print_value = function 
-	  NullV -> "new NullV();"
-	| IntV(v) -> "new IntV("^(string_of_int v)^"),"
-	| BoolV(b) -> "new BoolV("^(string_of_bool b)^"),"
+	  NullV -> "new NullV()"
+	| IntV(v) -> "new IntV("^(string_of_int v)^")"
+	| BoolV(b) -> "new BoolV("^(string_of_bool b)^")"
 	| PairV(x,y) -> "new PairV("^print_value(x)^","^print_value(y)^")"
 	| ClosureV(c,v) -> "new ClosureV("^print_instr(c)^","^print_value(v)^")";;	
 
 let print_gen_class_to_java = function 
-	cfg -> "import java.util.*;" ^
-			"public class Gen {" ^
+	cfg -> "import java.util.*; \n" ^
+			"public class Gen { \n" ^
 			"public static LinkedList<Instr> code =" ^
-				print_instr(cfg) ^"}";;
+				print_instr(cfg) ^"; \n}";;

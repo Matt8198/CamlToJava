@@ -1,6 +1,6 @@
 import java.util.*;
 
-class IntV extends Value {
+public class IntV extends Value {
     /* Fields */
     int iv;
 

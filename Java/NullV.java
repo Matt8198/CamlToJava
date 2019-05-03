@@ -1,4 +1,4 @@
-class NullV extends Value {
+public class NullV extends Value {
 
     /* Constructors */
     public NullV () {

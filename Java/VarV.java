@@ -1,6 +1,6 @@
 import java.util.*;
 
-class VarV extends Value {
+public class VarV extends Value {
     /* Fields */
     String v;
 

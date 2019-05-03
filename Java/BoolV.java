@@ -1,6 +1,6 @@
 import java.util.*;
 
-class BoolV extends Value {
+public class BoolV extends Value {
     /* Fields */
     Boolean b;
 

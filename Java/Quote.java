@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Quote extends Instr {
+public class Quote extends Instr {
     Value v;
 
     

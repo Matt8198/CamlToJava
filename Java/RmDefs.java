@@ -1,7 +1,7 @@
 import java.util.*;
 
 //Appel d'une fonction
-class RmDefs extends Instr{
+public class RmDefs extends Instr{
 	int n;
 	
 	public RmDefs (int nb){

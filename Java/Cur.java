@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Cur extends Instr {
+public class Cur extends Instr {
 	
 	LinkedList<Instr> code;
 	

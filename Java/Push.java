@@ -6,7 +6,9 @@ class Push extends Instr {
         
 		//On ajoute la valeur de la config dans la pile
 		ValueSE x = new ValueSE(cf.get_value());
-		cf.get_stack().add(x);
+		
+		//On ajoute avec addFirst comme pour LLE.
+		cf.get_stack().addFirst(x);
 		
 		//On lance la config
 		cf.get_code().pop();

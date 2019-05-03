@@ -1,7 +1,7 @@
 import java.util.*;
 
 //Appel d'une fonction
-class Call extends Instr{
+public class Call extends Instr{
 	Map<String,LinkedList<Instr>> defs;
 	
 	public Call (Map<String,LinkedList<Instr>> f){

@@ -1,10 +1,10 @@
 import java.util.*;
 
 //Appel d'une fonction
-class Call extends Instr{
-	Value v;
+public class Call extends Instr{
+	String v;
 	
-	public Call (Value f){
+	public Call (String f){
 		v=f;
 	}
 	

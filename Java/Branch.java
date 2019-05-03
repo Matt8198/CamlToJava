@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Branch extends Instr {
+public class Branch extends Instr {
 	
     LinkedList<Instr> code1;
 	LinkedList<Instr> code2;
