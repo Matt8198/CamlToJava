@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class CodeSE extends StackElem {
+class CodeSE extends StackElem {
 
 	LinkedList<Instr> code;
 	

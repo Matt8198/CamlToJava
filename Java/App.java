@@ -7,9 +7,13 @@ public class App extends Instr {
 		
 		//On récupère la valeur de la config qui est une paire entre une closure et une value
 		PairV p = (PairV) cf.get_value();
-		System.out.println(p.getValue1());
+		// System.out.println("coucou" + p.getValue1());
+		
 		//On récupère la closure
 		ClosureV clo = (ClosureV) (p.getValue1());
+		
+		// System.out.println("closure code" + (clo.get_code()));
+		// System.out.println("closure val" + (clo.get_val()));
 		
 		//On récupère la valeur de la closure
 		ValueSE y = new ValueSE (clo.get_val());
@@ -24,10 +28,14 @@ public class App extends Instr {
 		cf.set_value(new_p);
 		
 		//On ajoute le code dans la pile, tout comme Value, il y a ValueSE, la même pour le code
-		cf.get_stack().add(new CodeSE(cf.get_code()));
+		cf.get_stack().addFirst(new CodeSE(cf.get_code()));
 		
 		//On ajoute le code de la closure dans la config
-		cf.set_code(clo.get_code());
+		cf.set_code(new LinkedList<Instr>(clo.get_code()));
+		
+		
+		
+		
         
     }
 }

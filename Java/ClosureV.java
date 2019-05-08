@@ -2,25 +2,25 @@ import java.util.*;
 
 class ClosureV extends Value {
     /* Fields */
-    LinkedList<Instr> c;
-	Value v;
+    LinkedList<Instr> code;
+	Value val;
 
     /* Constructors */
     public ClosureV (LinkedList<Instr> c, Value v) {
-		c=c;
-		v=v;
+		code=c;
+		val=v;
     }
 
-    LinkedList<Instr> get_code () {
-        return c;
+    public LinkedList<Instr> get_code () {
+        return code;
     }
 	
 	
-    Value get_val () {
-        return v;
+    public Value get_val () {
+        return val;
     }
 
     void print_value() {
-        System.out.print(v);
+        System.out.print(val);
     }
 }

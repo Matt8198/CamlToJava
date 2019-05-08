@@ -4,8 +4,8 @@ public class Cur extends Instr {
 	
 	LinkedList<Instr> code;
 	
-	public Cur (LinkedList<Instr> code){
-		code=code;
+	public Cur (LinkedList<Instr> c){
+		code=c;
 	}
 	
     void exec_instr(Config cf) {

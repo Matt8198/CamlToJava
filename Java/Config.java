@@ -5,7 +5,7 @@ class Config extends Object {
     LinkedList<Instr> c;
     LinkedList<StackElem> s;
 	
-	Map<String, LinkedList<Instr>> fds ;
+	LinkedList<Couple<String, LinkedList<Instr>>> fds ;
 
     Value get_value() {
         return v;
@@ -16,7 +16,7 @@ class Config extends Object {
     LinkedList<StackElem> get_stack() {
         return s;
     }
-	Map<String,LinkedList<Instr>> get_fds(){
+	LinkedList<Couple<String, LinkedList<Instr>>> get_fds(){
 		return fds;
 	}
 
@@ -30,32 +30,35 @@ class Config extends Object {
     void set_stack(LinkedList<StackElem> ns) {
         s = ns;
     }
-	void set_fds(Map<String,LinkedList<Instr>> new_fds){
+	void set_fds(LinkedList<Couple<String, LinkedList<Instr>>> new_fds){
 		fds=new_fds;
 	}
 
     /* Constructors */
-    public Config (Value vl, LinkedList<Instr> cd, LinkedList<StackElem> se, Map<String,LinkedList<Instr>> f) {
+    public Config (Value vl, LinkedList<Instr> cd, LinkedList<StackElem> se, LinkedList<Couple<String, LinkedList<Instr>>> defs) {
         v = vl;
         c = cd;
         s = se;
-		fds=f;
+		fds=defs;
     }
 
 
     // one-step execution 
     boolean exec_step() {
-		System.out.println("");
         // to be implemented
         if (c.isEmpty()){
             return false;
         }
         else{
+			// System.out.println("VOICI LA CONFIG EN COURS" + c.get(0));
+			// System.out.println("Je look la valeur config" + this.v);
+			// System.out.println("Je look le code config"+this.c);
+			// System.out.println("Je look la pile config" + this.s);
+			// System.out.println();
             c.get(0).exec_instr(this);
-			System.out.println(this.v);
-			System.out.println(this.c);
-			System.out.println(c.get(0));
-            System.out.println("");
+			
+			
+            // System.out.println("");
 			return true;
         }
         
@@ -63,6 +66,7 @@ class Config extends Object {
 
     // run to completion
     void exec() {
+		System.out.println("VOICI LE CODE DE DEPART" + this.c);
         // to be implemented
         while (exec_step()){
             

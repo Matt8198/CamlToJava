@@ -74,25 +74,62 @@ let rec exec = function
    (*Cas de base*)
    | cfg -> cfg;;
 
+(*Première Version de access.*)
+(* let rec access v env = match env with *)
+	(* [] -> failwith "liste vide" *)
+	(* |z::liste -> if z = v then [PrimInstr(UnOp(Snd))] *)
+			(* else (PrimInstr(UnOp(Fst)))::(access v liste);; *)
 
-let rec access v env = match env with
+(*On doit définir la listes de noms de fonctions pour access
+sinon nous aurons des erreurs de type*)
+let rec accessGenList v env = match env with
 	[] -> failwith "liste vide"
-	|z::liste -> if z = v then [PrimInstr(UnOp(Snd))]
-			else (PrimInstr(UnOp(Fst)))::(access v liste);;
-	
+	|(f :: env) -> if v=f then [Call f] else (accessGenList v env);;
+			
+(*Faisons une deuxième version de access pour les appels récursifs*)
+(*Ici, on génère une liste (gen) de Fst/Snd pour une EVar et un Call pour un Edef.
+On reprend le modèle de la première version access v env*)
+let rec accessGen v env gen= match env with
+	[] -> failwith "liste vide"
+	| (EVar(x)::env) -> if v=x then gen@[PrimInstr(UnOp(Snd))]
+			else (accessGen v env ((PrimInstr(UnOp(Fst)))::gen))
+	| (EDef(f)::env) -> accessGenList v f;;
 
+(*Nous allons appeler la fonction accessGen avec la fonction access v env ou on *)
+(* initialisera notre liste généré à vide comme ceci
+IL NE FAUT PAS OUBLIER DE METTRE DANS LA REGLE DU FN LE EVAR SINON ERREUR DE TYPE DANS COMPILE*)
+let access v env = accessGen v env [];;
+(*Cette fonction a été testé avec l'exemple du cours, qui donne les mêmes résultats*)
+	
+(*Pour pouvoir compiler le let rec, il nous faut rajouter les noms des fonctions de defs
+dans l'environnement *)
+let rec addNameFunction defs = match defs with
+	|((name, body)::defs) -> name :: addNameFunction(defs)
+	| [] -> [];;
+
+(* puis compiler le corps de chacune des fonctions de defs dans cet env*)	
+let rec compileBody defs env f = match defs with
+	|((name, body)::defs) -> (name,f(env,body)) :: (compileBody (defs) (env) (f) )
+	|[] -> [];;
+	
+	
 let rec compile = function
 	|(env,Bool(b)) -> [Quote(BoolV(b))]
 	|(env,Int(i)) -> [Quote(IntV(i))]
 	|(env,Var(v)) -> access v env
-	|(env, Fn(v,e)) -> [Cur(compile(v::env, e)@[Return])]
+	|(env, Fn(v,e)) -> [Cur((compile(EVar(v)::env, e))@[Return])]
 	|(env, App(PrimOp(p),e)) -> compile(env,e)@[PrimInstr(p)]
 	|(env, App(f,a)) -> [Push]@(compile(env,f))@[Swap]@(compile(env,a))@[Cons;App]
 	|(env, Pair(e1,e2)) -> [Push]@(compile(env,e1))@[Swap]@(compile(env,e2))@[Cons]
 	|(env, Cond(i,t,e)) -> [Push]@compile(env,i)@[Branch(compile(env,t)@[Return],compile(env,e)@[Return])]
-	(* |(env,Fix(defs,e)) -> [AddDefs dc] @ ec @ [RmDefs (List.length dc)];; *)
+	(*Compilation des appels récursifs*)
+	|(env,Fix(defs,e)) -> let dc = (compileBody (defs) (EDef((addNameFunction defs))::env) (compile)) in 
+								let ec = compile(EDef((addNameFunction defs))::env,e) in 
+									[AddDefs dc] @ ec @ [RmDefs (List.length dc)];;
 	
 
+	
+	
 let compile_prog = function
 	Prog(t, exp) -> compile([], exp);;
 				
@@ -104,11 +141,15 @@ let rec print_instr = function
 	|(Swap::config) -> "\nLLE.add_elem(new Swap()," ^ print_instr(config)^")"
 	|((Quote v)::config) -> "\nLLE.add_elem(new Quote("^ print_value(v) ^"),"^print_instr(config)^")"
 	|(App::config) -> "\nLLE.add_elem(new App(),"^print_instr(config)^")"
+	|(Branch(c1,c2) :: config) -> "\nLLE.add_elem(new Branch("^print_instr(c1)^","^print_instr(c2)^")," ^ print_instr(config)^")"
+	|((Call f)::config) -> "\nLLE.add_elem(new Call(\""^f^"\")," ^ print_instr(config) ^ ")"
+	|((AddDefs defs)::config) -> "\nLLE.add_elem(new AddDefs("^ print_defs defs ^"),"^print_instr(config) ^")"
+	|((RmDefs n)::config) -> "\nLLE.add_elem(new RmDefs("^string_of_int(n)^"),"^print_instr(config)^ ")"
 	|(PrimInstr(UnOp(Fst))::config) -> "\nLLE.add_elem(new Fst(),"^print_instr(config)^")"
 	|(PrimInstr(UnOp(Snd))::config) -> "\nLLE.add_elem(new Snd(),"^print_instr(config)^")"
 	|(PrimInstr(BinOp(BArith(BAadd)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Add),"^print_instr(config)^")"
 	|(PrimInstr(BinOp(BArith(BAsub)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Sub),"^print_instr(config)^")"
-	|(PrimInstr(BinOp(BArith(BAmul)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Mul),"^print_instr(config)^")"
+	|(PrimInstr(BinOp(BArith(BAmul)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Mult),"^print_instr(config)^")"
 	|(PrimInstr(BinOp(BArith(BAmod)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Mod),"^print_instr(config)^")"
 	|(PrimInstr(BinOp(BArith(BAdiv)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Div),"^print_instr(config)^")"
 	|(PrimInstr(BinOp(BCompar(BCeq)))::config) -> "\nLLE.add_elem(new BinOp(BinOp.operateur.Eq),"^print_instr(config)^")"
@@ -123,8 +164,11 @@ and print_value = function
 	| IntV(v) -> "new IntV("^(string_of_int v)^")"
 	| BoolV(b) -> "new BoolV("^(string_of_bool b)^")"
 	| PairV(x,y) -> "new PairV("^print_value(x)^","^print_value(y)^")"
-	| ClosureV(c,v) -> "new ClosureV("^print_instr(c)^","^print_value(v)^")";;	
-
+	| ClosureV(c,v) -> "new ClosureV("^print_instr(c)^","^print_value(v)^")"
+and print_defs = function
+	((name,body)::defs) -> "LLE.add_elem(new Couple(\""^name^"\","^(print_instr body)^"), "^(print_defs defs)^")"
+    | [] -> "LLE.empty()";;
+	
 let print_gen_class_to_java = function 
 	cfg -> "import java.util.*; \n" ^
 			"public class Gen { \n" ^

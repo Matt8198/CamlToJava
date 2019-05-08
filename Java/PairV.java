@@ -31,7 +31,7 @@ public class PairV extends Value{
 		}
         
 	void print_value() {
-		System.out.print(fst);
-		System.out.print(snd);
+		System.out.print("("+fst+",");
+		System.out.print(snd+")");
     }
 }

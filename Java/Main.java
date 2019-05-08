@@ -9,11 +9,10 @@ public class Main {
 
         LinkedList<Integer> ll1, ll2;
         LinkedList<Instr> example_code ;
-		Map<String,LinkedList<Instr>> map;
         Config cfg;
         
 
-        cfg = new Config(new NullV(), Gen.code, LLE.empty(),new HashMap<String,LinkedList<Instr>>());
+        cfg = new Config(new NullV(), Gen.code, LLE.empty(),LLE.empty());
         cfg.exec();
         cfg.get_value().print_value();
         System.out.println();

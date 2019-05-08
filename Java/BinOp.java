@@ -18,17 +18,17 @@ public class BinOp extends Instr {
     }
     
     public void exec_instr(Config cf){
-
+		PairV pair = (PairV)cf.get_value();
+		Value valeur = null;
         switch(op){
             case Add:
             case Sub:
             case Mult:
 			case Mod:
             case Div:
-                PairV pair = (PairV)cf.get_value();
-                IntV valeur = new IntV(operArith((IntV) pair.getValue1(),(IntV)pair.getValue2()));
-                cf.set_value(valeur);
-                cf.get_code().pop();
+                
+                valeur = new IntV(operArith((IntV) pair.getValue1(),(IntV)pair.getValue2()));
+               
                 break;
 			case Eq:
 			case Ge:
@@ -36,11 +36,11 @@ public class BinOp extends Instr {
 			case Le:
 			case Lt:
 			case Ne:
-				PairV pair2 = (PairV) cf.get_value();
-				BoolV valeur2 = new BoolV(operComp((IntV) pair2.getValue1(), (IntV) pair2.getValue2()));
-				cf.set_value(valeur2);
-				cf.get_code().pop();
+				valeur = new BoolV(operComp((IntV) pair.getValue1(), (IntV) pair.getValue2()));
+				
         }
+		cf.set_value(valeur);
+		cf.get_code().pop();
     }
     
     public int operArith(IntV a, IntV b){
