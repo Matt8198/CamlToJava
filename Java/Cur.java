@@ -1,24 +1,25 @@
 import java.util.*;
 
+//Construction d'une cloture
 public class Cur extends Instr {
 	
-	LinkedList<Instr> code;
+	private LinkedList<Instr> code;
 	
 	public Cur (LinkedList<Instr> c){
 		code=c;
 	}
 	
     void exec_instr(Config cf) {
-        //On récupère la valeur de la config
+        //On récupère le terme de la config
 		ValueSE x = new ValueSE(cf.get_value());
 		
 		//On crée une closure
 		ClosureV clo = new ClosureV(code,x.get_value());
 		
-		//On met la closure dans la config
+		//La closure est la nouvelle valeur de la config
 		cf.set_value(clo);
 		
-		//On lance le code
+		//On dépile le code
 		cf.get_code().pop();
     }
 }

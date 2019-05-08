@@ -8,6 +8,7 @@
  *
  * @author mambrois
  */
+//Class permettant de faire les opérations élémentaires
 public class BinOp extends Instr {
     enum operateur{Add,Sub,Mult,Div,Mod,Eq,Ge,Gt,Le,Lt,Ne};
     

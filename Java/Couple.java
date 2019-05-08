@@ -1,5 +1,7 @@
 import java.util.*;
 
+//Construction d'un couple permettant de mettre un type en 
+//type de LinkedList (notamment pour la pile de définitions de fonctions)
 public class Couple<First, Second>{
     private First fst;
     private Second snd;

@@ -1,19 +1,17 @@
 import java.util.*;
 
+//Application d'une cloture
 public class App extends Instr {
 	
     void exec_instr(Config cf) {
+		//On dépile le code
 		cf.get_code().pop();
 		
-		//On récupère la valeur de la config qui est une paire entre une closure et une value
+		//On récupère le terme de la config qui est une paire entre une closure et une value
 		PairV p = (PairV) cf.get_value();
-		// System.out.println("coucou" + p.getValue1());
 		
 		//On récupère la closure
-		ClosureV clo = (ClosureV) (p.getValue1());
-		
-		// System.out.println("closure code" + (clo.get_code()));
-		// System.out.println("closure val" + (clo.get_val()));
+		ClosureV clo = (ClosureV) (p.getValue1());		
 		
 		//On récupère la valeur de la closure
 		ValueSE y = new ValueSE (clo.get_val());
@@ -24,13 +22,14 @@ public class App extends Instr {
 		//On crée la nouvelle paire
 		PairV new_p = new PairV(y.get_value(),z.get_value());
 		
-		//On ajoute cette paire dans la valeur de la config
+		//On ajoute cette paire dans le terme de la config
 		cf.set_value(new_p);
 		
 		//On ajoute le code dans la pile, tout comme Value, il y a ValueSE, la même pour le code
 		cf.get_stack().addFirst(new CodeSE(cf.get_code()));
 		
 		//On ajoute le code de la closure dans la config
+		//On utilise LinkedListe pour copier et ne pas avoir de problème
 		cf.set_code(new LinkedList<Instr>(clo.get_code()));
 		
 		

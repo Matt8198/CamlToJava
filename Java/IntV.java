@@ -2,7 +2,7 @@ import java.util.*;
 
 public class IntV extends Value {
     /* Fields */
-    int iv;
+    private int iv;
 
     /* Constructors */
     public IntV (int i) {

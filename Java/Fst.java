@@ -8,15 +8,18 @@
  *
  * @author mambrois
  */
+//Class permettant de choisir le premier élément d'une paire
 public class Fst extends Instr{
     
     void exec_instr(Config cf){
-        //On récupère la valeur de la config
+		
+        //On récupère le terme de la config
 		PairV p = (PairV)(cf.get_value());
-		// System.out.println("MA PAIRE " + p);
-		// System.out.println("MA PAIRE V1" + p.getValue1());
-		// System.out.println("MA PAIRE V2" + p.getValue2());
+		
+		//La nouveau terme est le premier élement de la paire
         cf.set_value(p.getValue1());
+		
+		//On dépile le code
         cf.get_code().pop();
     }
     

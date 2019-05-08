@@ -2,7 +2,7 @@ import java.util.*;
 
 public class BoolV extends Value {
     /* Fields */
-    Boolean b;
+    private Boolean b;
 
     /* Constructors */
     public BoolV (Boolean bo) {

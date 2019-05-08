@@ -8,15 +8,15 @@
  *
  * @author mambrois
  */
+//Opération Second : Récupérer le second élément d'une paire
 public class Snd extends Instr{
     
     void exec_instr(Config cf){
-		//On récupère la valeur de la config
+		//On récupère le terme de la config qui est une paire
 		PairV p = (PairV)(cf.get_value());
-		// System.out.println("MA PAIRE " + p);
-		// System.out.println("MA PAIRE V1" + p.getValue1());
-		// System.out.println("MA PAIRE V2" + p.getValue2());
+		//On ajoute le second terme de la paire qu'on ajoute dans la config
         cf.set_value(p.getValue2());
+		//On dépile le code
         cf.get_code().pop();
     }
     

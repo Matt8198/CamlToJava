@@ -8,6 +8,7 @@
  *
  * @author mambrois
  */
+//Class d'une PairV
 public class PairV extends Value{
     private Value fst, snd;
     

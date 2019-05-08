@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class ValueSE extends StackElem {
-	Value val;
+	private Value val;
 	
 	public ValueSE (Value v){
 		val = v;

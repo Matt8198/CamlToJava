@@ -1,8 +1,7 @@
 import java.util.*;
 
 public class VarV extends Value {
-    /* Fields */
-    String v;
+    private String v;
 
     /* Constructors */
     public VarV (String i) {

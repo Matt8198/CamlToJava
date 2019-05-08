@@ -1,7 +1,8 @@
 import java.util.*;
 
+//Constante
 class Quote extends Instr {
-    Value v;
+    private Value v;
 
     
     Value get_value() {

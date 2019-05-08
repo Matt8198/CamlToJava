@@ -2,7 +2,7 @@ import java.util.*;
 
 class CodeSE extends StackElem {
 
-	LinkedList<Instr> code;
+	private LinkedList<Instr> code;
 	
 	public CodeSE (LinkedList<Instr> c){
 		code = c;
